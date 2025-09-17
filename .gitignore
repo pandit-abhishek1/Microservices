@@ -1,0 +1,10 @@
+docker-volume/
+node_modules/
+dist/
+.env
+.DS_Store
+.vscode/
+.idea/
+*.log
+*.tmp
+secret.md 
