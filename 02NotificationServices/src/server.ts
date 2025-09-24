@@ -4,8 +4,10 @@ import http from 'http';
 import { config } from '@notification/config';
 import { winstonLogger } from '@pandit-abhishek1/sharedservices';
 import { Logger} from 'winston';
-import {healthRoutes} from './routes';
-
+import {healthRoutes} from '@notification/routes';
+import { getElasticSearchConnection } from '@notification/elasticsearch';
+import {createConnection} from '@notification/queues/connection';
+import {consumeAuthEmailMessages} from '@notification/queues/email.consumer';
 const SERVER_PORT = config.SERVER_PORT || 4001;
 
 const log = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'NotificationService','debug') as Logger;
@@ -18,10 +20,19 @@ const log = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'NotificationService',
        app.use(healthRoutes());
     }
 
-    function startElasticSearch(): void {}
+    function startElasticSearch(): void {
+        getElasticSearchConnection();
+    }
     
     async function startQueues(): Promise<void> {
+        try {
+            const emailChannel = await createConnection();
+            await consumeAuthEmailMessages(emailChannel, 'auth-email-queue');
+            await emailChannel?.assertExchange('jobber-email-notification', 'auth-email', 'direct',Buffer.from({message: 'test message'}), { durable: true });
 
+        } catch (error) {
+            log.error('Error starting queues', { error });
+        }
     }
 
     

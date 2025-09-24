@@ -1,34 +1,19 @@
 {
   "compilerOptions": {
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "importHelpers": true,
-    "jsx": "react-jsx",
-    "lib": ["dom", "esnext"],
-    "module": "esnext",
+    "module": "commonjs",
+    "target": "es2022",
     "moduleResolution": "node",
-    "noEmitOnError": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "strict": true,
     "outDir": "build",
     "rootDir": "src",
     "sourceMap": true,
-    "strict": true,
-    "target": "es2021",
-    "emitDecoratorMetadata": true,
-    "forceConsistentCasingInFileNames": true,
-    "pretty": true,
-    "resolveJsonModule": true,
+    "paths": { "@notification/*": ["./src/*"] },
     "plugins": [
-      {
-        "transform": "typescript-transform-paths"
-      },
-      {
-        "transform": "typescript-transform-paths",
-        "afterDeclarations": true
-      }
-    ],
-    "paths": { "@notification/*": ["./src/*"] }
+      { "transform": "typescript-transform-paths" },
+      { "transform": "typescript-transform-paths", "afterDeclarations": true }
+    ]
   },
   "include": ["src"],
   "exclude": ["node_modules"]

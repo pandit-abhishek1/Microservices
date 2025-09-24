@@ -1,0 +1,24 @@
+# Ignore common development-related files and directories
+node_modules/
+.vscode/
+.git/
+.github/
+.gitignore
+.DS_Store
+.npmrc
+# Ignore test-related files and directories
+test/
+tests/
+*.spec.js
+karma.conf.js
+
+# Ignore documentation and examples
+docs/
+examples/
+
+# Ignore build artifacts (if not intended for publication)
+dist/
+
+# Optionally, include specific files that were previously ignored
+# For example, if 'build/' is ignored, but you want to include a specific file within it:
+# !build/main.js 
