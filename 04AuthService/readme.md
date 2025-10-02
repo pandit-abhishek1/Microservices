@@ -2,8 +2,8 @@ dependencies
 
 - @elastic/elasticsearch
 - @pandit-abhishek1
-- ampqlib
-- bycryptjs
+- amqplib
+- bcryptjs
 - compression
 - cors
 - dotenv
@@ -21,14 +21,14 @@ dependencies
 dev dependencies
 
 - @jest/types
-- @types/ampqlib
-- @types/bycrptjs
+- @types/amqplib
+- @types/bcryptjs
 - @types/compression
 - @types/cors
 - @types/express
 - @types/hpp
 - @types/jest
-- @types/jswebtoken
+- @types/jsonwebtoken
 - @types/lodash
 - @typescript-eslint/eslint-plugin
 - @typescript-eslint/parser
