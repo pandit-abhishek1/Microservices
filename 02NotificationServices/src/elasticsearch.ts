@@ -1,6 +1,5 @@
 import { Client } from "@elastic/elasticsearch";
-import Cluster from "@elastic/elasticsearch/lib/api/api/cluster";
-import { ClusterHealthHealthResponseBody, ClusterHealthResponse } from "@elastic/elasticsearch/lib/api/types";
+import { ClusterHealthResponse } from "@elastic/elasticsearch/lib/api/types";
 import {config }from '@notification/config';
 import { winstonLogger } from "@pandit-abhishek1/sharedservices";
 import { Logger } from "winston";
@@ -18,7 +17,7 @@ export async function getElasticSearchConnection() {
       logger.info(`Connected to ElasticSearch: ${JSON.stringify(health)}`);
     } catch (error) {
       logger.error(`ElasticSearch not connected, retrying in 5 seconds...${error}`);
-      
+
       await new Promise((resolve) => setTimeout(resolve, 5000));
     }
   }
