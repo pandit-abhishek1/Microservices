@@ -126,7 +126,7 @@ export async function getAuthUserByPasswordToken(token: string): Promise<IAuthDo
 //   }
 // }
 
-export async function updateVerifyEmailField(authId: number, emailVerified: number, emailVerificationToken?: string): Promise<void> {
+export async function updateVerifyEmailField(authId: number, emailVerified: boolean, emailVerificationToken?: string): Promise<void> {
   try {
     await AuthModel.update(
       !emailVerificationToken

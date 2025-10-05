@@ -24,10 +24,9 @@ export async function createAuthUserController( req: Request, res: Response ): P
         throw new BadRequestError(error?.details[0]?.message!);
       }
       } catch (error) {
-        throw new BadRequestError('Invalid request data', 'SignUp create() method error');
+        throw new BadRequestError('Invalid request data', `SignUp create() method error, ${error}`);
       }
       try {
-        console.log('Request Body: ', req.body);
       const { username, email, password , country, profilePicture } = req.body;
       const checkIfUserExists = await getUserByUsernameOrEmail(username, email);
       if (checkIfUserExists){
@@ -63,7 +62,6 @@ export async function createAuthUserController( req: Request, res: Response ): P
         JSON.stringify(messageDetails),
         'verify email message sent to notification services'
       );
-      console.log('User created successfully: ', result);
       const userJwt = signToken(result.id!, result.email!, result.username!);
       res.status(StatusCodes.CREATED).json({ message: 'User created successfully',
         data: result, token: userJwt

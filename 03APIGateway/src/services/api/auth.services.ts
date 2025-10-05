@@ -20,13 +20,13 @@ class AuthService{
     return response;
   }
 
-  async changePassword(currentPassword: string, newPassword: string): Promise<AxiosResponse> {
-    const response: AxiosResponse = await axiosAuthInstance.put('/change-password', { currentPassword, newPassword });
+  async changePassword(body: { currentPassword: string, newPassword: string }): Promise<AxiosResponse> {
+    const response: AxiosResponse = await axiosAuthInstance.put('/change-password', body);
     return response;
   }
 
   async verifyEmail(token: string): Promise<AxiosResponse> {
-    const response: AxiosResponse = await axiosAuthInstance.put('/verify-email', { token });
+    const response: AxiosResponse = await axiosAuthInstance.put(`/verify-email/${token}`);
     return response;
   }
 
@@ -57,8 +57,8 @@ class AuthService{
     return response;
   }
 
-  async resetPassword(token: string, password: string, confirmPassword: string): Promise<AxiosResponse> {
-    const response: AxiosResponse = await this.axiosService.axios.put(`/reset-password/${token}`, { password, confirmPassword });
+  async resetPassword(token: string, body: { password: string, confirmPassword: string }): Promise<AxiosResponse> {
+    const response: AxiosResponse = await this.axiosService.axios.put(`/reset-password/${token}`, body);
     return response;
   }
 
