@@ -31,14 +31,38 @@ const AuthModel: ModelDefined<IAuthDocument, AuthUserCreationAttributes> & AuthM
       allowNull: false,
       unique: true
     },
-    profilePictureId: {
+    profilePicture: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+    emailVerificationToken: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
+      unique: true
     },
     country: {
       type: DataTypes.STRING,
       allowNull: true
     },
+    browserName: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: 'Unknown'
+  },
+  deviceType: {
+  type: DataTypes.STRING,
+  allowNull: false,
+  defaultValue: 'Unknown'
+},
+  otp: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  otpExpiration: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    defaultValue: new Date()
+  },
     passwordResetToken: {
       type: DataTypes.STRING,
       allowNull: true
@@ -88,5 +112,5 @@ AuthModel.prototype.hashPassword = async function (password: string): Promise<st
 }
 
 // force: true always deletes the table when there is a server restart
-AuthModel.sync({});
+AuthModel.sync({alter: true});
 export { AuthModel };

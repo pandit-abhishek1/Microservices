@@ -1,5 +1,5 @@
 
-const SERVER_PORT = process.env.PORT || 3000;
+const SERVER_PORT = 4000;
 import { CustomError, IErrorResponse, winstonLogger } from "@pandit-abhishek1/sharedservices";
 import {Logger} from "winston";
 import { Application, json, NextFunction, Request, Response,urlencoded } from "express";
@@ -12,7 +12,8 @@ import { StatusCodes } from "http-status-codes";
 import http from "http";
 import {config} from "@gateway/config";
 import {elasticSearch } from "@gateway/elasticsearch";
-import { appRoutes } from "./routes";
+import { appRoutes } from "@gateway/routes";
+import { axiosAuthInstance } from "@gateway/services/api/auth.services";
 const logger: Logger = winstonLogger(`${config.ELASTICSEARCH_URL}`,"API-Gateway", 'debug');
 
 export class Server {
@@ -48,6 +49,12 @@ export class Server {
             methods: ['GET', 'POST', 'PUT', 'DELETE'],
             credentials: true,
         }));
+        app.use((req: Request, _res: Response, next: NextFunction) => {
+            if(req.session?.jwt) {
+              axiosAuthInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+            }
+            next();
+        });
         logger.info("Security middleware applied");
     }
 private standardMiddleware(app: Application): void {
@@ -57,7 +64,7 @@ private standardMiddleware(app: Application): void {
        logger.info("Standard middleware applied");
    }
 private routesMiddleware(app: Application): void {
-    app.use('/', appRoutes);
+     appRoutes(app);
     console.log("Routes middleware applied");
     logger.info("Routes middleware applied");
 

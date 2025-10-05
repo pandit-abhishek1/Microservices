@@ -8,6 +8,7 @@ import {healthRoutes} from '@notification/routes';
 import { getElasticSearchConnection } from '@notification/elasticsearch';
 import {createConnection} from '@notification/queues/connection';
 import {consumeAuthEmailMessages} from '@notification/queues/email.consumer';
+import { Channel } from 'amqplib';
 const SERVER_PORT = config.SERVER_PORT || 4001;
 
 const log = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'NotificationService','debug') as Logger;
@@ -15,7 +16,7 @@ const log = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'NotificationService',
 
  export   function start (app: Application) : void {
        startServer(app);
-       startElasticSearch();
+      //  startElasticSearch();
        startQueues();
        app.use(healthRoutes());
     }
@@ -23,19 +24,19 @@ const log = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'NotificationService',
     function startElasticSearch(): void {
         getElasticSearchConnection();
     }
-    
+
     async function startQueues(): Promise<void> {
         try {
-            const emailChannel = await createConnection();
-            await consumeAuthEmailMessages(emailChannel, 'auth-email-queue');
-            await emailChannel?.assertExchange('jobber-email-notification', 'auth-email', 'direct',Buffer.from({message: 'test message'}), { durable: true });
+             const emailChannel: Channel = await createConnection() as Channel;
 
+            await consumeAuthEmailMessages(emailChannel, 'auth-email-queue');
+            // await consumeOrderMessages(emailChannel, 'order-queue');
         } catch (error) {
             log.error('Error starting queues', { error });
         }
     }
 
-    
+
     function startServer(app: Application): void {
         try {
             const httpServer: http.Server = new http.Server(app);

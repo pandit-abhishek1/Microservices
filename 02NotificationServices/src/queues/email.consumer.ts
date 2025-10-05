@@ -10,122 +10,60 @@ const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'emailConsumer
 async function consumeAuthEmailMessages(channel: Channel, queueName: string): Promise<void> {
   try {
     if (!channel) {
-      channel = (await createConnection()) as Channel;
+      channel = await createConnection() as Channel;
     }
     const exchangeName = 'jobber-email-notification';
-    const routingkey = 'auth-email';
+    const routingKey = 'auth-email';
     const queueName = 'auth-email-queue';
-
-    await channel.assertExchange(exchangeName, 'direct', { durable: true });
-    const queue = await channel.assertQueue(queueName, { durable: true, autoDelete: false });
-    await channel.bindQueue(queue.queue, exchangeName, routingkey);
-    channel.consume(queue.queue, async (msg: ConsumeMessage | null) => {
-      if (msg) {
-        const {
-          receiveEmail,
-          username,
-          template,
-          sender,
-          offerLink,
-          amount,
-          buyerUsername,
-          sellerUsername,
-          title,
-          description,
-          deliveryDays,
-          orderId,
-          orderDue,
-          requirements,
-          orderUrl,
-          originalDate,
-          newDate,
-          reason,
-          subject,
-          header,
-          type,
-          message,
-          serviceFee,
-          total
-        } = JSON.parse(msg.content.toString());
-        const locals: IEmailLocals = {
-          appLink: config.CLIENT_URL || 'http://localhost:3000',
-          appIcon: 'https://unsplash.com/photos/a-man-wearing-a-garment-UsOq2e-y2xc',
-          username,
-          sender,
-          offerLink,
-          amount,
-          buyerUsername,
-          sellerUsername,
-          title,
-          description,
-          deliveryDays,
-          orderId,
-          orderDue,
-          requirements,
-          orderUrl,
-          originalDate,
-          newDate,
-          reason,
-          subject,
-          header,
-          type,
-          message,
-          serviceFee,
-          total
-        };
-        if(template=== 'orderPlaced'){
-          await sendEmail("orderPlaced",receiveEmail, locals);
-          await sendEmail('orderReceipt',receiveEmail, locals);
-       }
-       else {
-         await sendEmail(template,receiveEmail, locals);
-        }
-       channel.ack(msg!);
-      }
+    await channel.assertExchange(exchangeName, 'direct');
+    const jobberQueue = await channel.assertQueue(queueName, { durable: true, autoDelete: false });
+    await channel.bindQueue(jobberQueue.queue, exchangeName, routingKey);
+    channel.consume(jobberQueue.queue, async (msg: ConsumeMessage | null) => {
+      const { receiverEmail, username, verifyLink, resetLink, template } = JSON.parse(msg!.content.toString());
+      const locals: IEmailLocals = {
+        appLink: `${config.CLIENT_URL}`,
+        appIcon: 'https://i.ibb.co/Kyp2m0t/cover.png',
+        username,
+        verifyLink,
+        resetLink
+      };
+      await sendEmail(template, receiverEmail, locals);
+      channel.ack(msg!);
     });
-    log.info(`Waiting for messages in queue: ${queueName}`);
   } catch (error) {
-    log.error(`Error asserting queue ${queueName}:`, error);
+    log.log('error', 'NotificationService EmailConsumer consumeAuthEmailMessages() method error:', error);
   }
-
-  channel.consume(queueName, (message: ConsumeMessage | null) => {
-    if (message) {
-      log.info(`Received message from queue ${queueName}: ${message.content.toString()}`);
-      channel.ack(message);
-    }
-  });
 }
+// async function consumeOrderMessages(channel: Channel, queueName: string): Promise<void> {
+//   try {
+//     if (!channel) {
+//       channel = (await createConnection()) as Channel;
+//     }
+//     const exchangeName = 'jobber-order-notification';
+//     const routingkey = 'order-email';
+//     const queueName = 'order-email-queue';
 
-async function consumeOrderMessages(channel: Channel, queueName: string): Promise<void> {
-  try {
-    if (!channel) {
-      channel = (await createConnection()) as Channel;
-    }
-    const exchangeName = 'jobber-order-notification';
-    const routingkey = 'order-email';
-    const queueName = 'order-email-queue';
+//     await channel.assertExchange(exchangeName, 'direct', { durable: true });
+//     const queue = await channel.assertQueue(queueName, { durable: true, autoDelete: false });
+//     await channel.bindQueue(queue.queue, exchangeName, routingkey);
+//     channel.consume(queue.queue, (message: ConsumeMessage | null) => {
+//       if (message) {
+//         log.info(`Received message from queue ${queueName}: ${message.content.toString()}`);
+//         //    send email and acknowledge message
+//         channel.ack(message);
+//       }
+//     });
+//     log.info(`Waiting for messages in queue: ${queueName}`);
+//   } catch (error) {
+//     log.error(`Error asserting queue ${queueName}:`, error);
+//   }
 
-    await channel.assertExchange(exchangeName, 'direct', { durable: true });
-    const queue = await channel.assertQueue(queueName, { durable: true, autoDelete: false });
-    await channel.bindQueue(queue.queue, exchangeName, routingkey);
-    channel.consume(queue.queue, (message: ConsumeMessage | null) => {
-      if (message) {
-        log.info(`Received message from queue ${queueName}: ${message.content.toString()}`);
-        //    send email and acknowledge message
-        channel.ack(message);
-      }
-    });
-    log.info(`Waiting for messages in queue: ${queueName}`);
-  } catch (error) {
-    log.error(`Error asserting queue ${queueName}:`, error);
-  }
+//   channel.consume(queueName, (message: ConsumeMessage | null) => {
+//     if (message) {
+//       log.info(`Received message from queue ${queueName}: ${message.content.toString()}`);
+//       channel.ack(message);
+//     }
+//   });
+// }
 
-  channel.consume(queueName, (message: ConsumeMessage | null) => {
-    if (message) {
-      log.info(`Received message from queue ${queueName}: ${message.content.toString()}`);
-      channel.ack(message);
-    }
-  });
-}
-
-export { consumeAuthEmailMessages, consumeOrderMessages };
+export { consumeAuthEmailMessages };

@@ -17,7 +17,7 @@ class AxiosService {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'gatewayToken': `Bearer ${gatewayToken}`
+        'gatewayToken': `${gatewayToken}`
       },
       withCredentials: true
     });
@@ -25,3 +25,4 @@ class AxiosService {
   }
 
 }
+export { AxiosService };

@@ -1,3 +1,4 @@
+import 'express-async-errors';
 import { IAuthPayload, winstonLogger,IErrorResponse, CustomError } from '@pandit-abhishek1/sharedservices';
 import { config } from '@authservices/config';
 import {Logger} from 'winston';
@@ -12,12 +13,15 @@ import {verify} from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import compression from 'compression';
 import {appRoutes} from '@authservices/routes';
+import { Channel } from 'amqplib';
+import { createConnection } from './queues/connections';
 const  logger: Logger= winstonLogger(`${config.ELASTICSEARCH_URL}`, 'AuthService server', 'debug');
-
+export let authChannel: Channel;
 export function start(app: Application){
             securityMiddleware(app);
             standardMiddleware(app);
             routesMiddleware(app);
+            startQueues();
             errorMiddleware(app);
             startServer(app);
 }
@@ -54,6 +58,10 @@ function standardMiddleware(app: Application): void{
 function routesMiddleware(app: Application):void{
      appRoutes(app);
 }
+async function startQueues(): Promise<void> {
+  authChannel = await createConnection() as Channel;
+}
+
 
 function errorMiddleware(app: Application): void{
    app.use( (req: Request, res: Response, next: NextFunction) => {
