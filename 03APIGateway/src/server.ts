@@ -14,6 +14,8 @@ import {config} from "@gateway/config";
 import {elasticSearch } from "@gateway/elasticsearch";
 import { appRoutes } from "@gateway/routes";
 import { axiosAuthInstance } from "@gateway/services/api/auth.services";
+
+
 const logger: Logger = winstonLogger(`${config.ELASTICSEARCH_URL}`,"API-Gateway", 'debug');
 
 export class Server {
