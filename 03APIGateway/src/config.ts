@@ -11,7 +11,7 @@ public  SECRET_KEY_TWO : string |undefined;
 public  CLIENT_URL : string |undefined;
 public  AUTH_BASE_URL : string |undefined;
 public  USER_BASE_URL : string |undefined;
-
+public  SOCKET_URL : string |undefined;
 public  REDIS_HOST : string |undefined;
 public  ELASTICSEARCH_URL : string |undefined;
 public  ELASTIC_APM_SERVER_URL : string |undefined;
@@ -26,7 +26,7 @@ constructor(){
     this.CLIENT_URL = process.env.CLIENT_URL;
     this.AUTH_BASE_URL = process.env.AUTH_BASE_URL;
     this.USER_BASE_URL = process.env.USER_BASE_URL;
-
+    this.SOCKET_URL = process.env.SOCKET_URL;
     this.REDIS_HOST = process.env.REDIS_HOST;
     this.ELASTICSEARCH_URL = process.env.ELASTICSEARCH_URL;
     this.ELASTIC_APM_SERVER_URL = process.env.ELASTIC_APM_SERVER_URL;
